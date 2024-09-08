@@ -9,10 +9,7 @@ import com.fiap.ecommerce.login.security.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -51,5 +48,14 @@ public class AuthController {
             return ResponseEntity.ok(new ResponseDTO(newUser.getEmail(), token));
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<String> validateToken(@RequestHeader("Authorization") String token) {
+        String userEmail = tokenService.validateToken(token.replace("Bearer ", "").trim());
+        if (userEmail != null) {
+            return ResponseEntity.ok(userEmail); // Retorna o email como identificação do usuário
+        }
+        return ResponseEntity.status(401).body("Token inválido ou expirado");
     }
 }
