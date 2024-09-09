@@ -54,7 +54,7 @@ public class AuthController {
     public ResponseEntity<String> validateToken(@RequestHeader("Authorization") String token) {
         String userEmail = tokenService.validateToken(token.replace("Bearer ", "").trim());
         if (userEmail != null) {
-            return ResponseEntity.ok(userEmail); // Retorna o email como identificação do usuário
+            return ResponseEntity.ok(userEmail);
         }
         return ResponseEntity.status(401).body("Token inválido ou expirado");
     }
