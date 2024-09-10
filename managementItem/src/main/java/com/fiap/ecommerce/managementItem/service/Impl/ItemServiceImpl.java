@@ -4,9 +4,11 @@ import com.fiap.ecommerce.managementItem.dto.ItemDTO;
 import com.fiap.ecommerce.managementItem.model.Item;
 import com.fiap.ecommerce.managementItem.repository.ItemRepository;
 import com.fiap.ecommerce.managementItem.service.ItemService;
+import io.jsonwebtoken.Claims;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,7 +27,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDTO getItemId(String id) {
+    public ItemDTO getItemId(Long id) {
         return toItemDTO(this.itemRepository.findById(Long.valueOf(id))
                 .orElseThrow(() -> new IllegalArgumentException("Item não encontrado")));
     }
@@ -34,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDTO createItem(ItemDTO itemDTO) {
         Item item = toItem(itemDTO);
         item = itemRepository.save(item);
+        System.out.println("item" + item);
         return toItemDTO(item);
     }
 
@@ -65,4 +68,5 @@ public class ItemServiceImpl implements ItemService {
     public Item toItem(ItemDTO itemDTO) {
         return new Item(itemDTO.id(), itemDTO.nameItem(), itemDTO.description(), itemDTO.price(), itemDTO.hasStock());
     }
+
 }

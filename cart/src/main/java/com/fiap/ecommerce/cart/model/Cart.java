@@ -16,6 +16,11 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "cart")
     private List<CartItem> items = new ArrayList<>();
+
+
 }

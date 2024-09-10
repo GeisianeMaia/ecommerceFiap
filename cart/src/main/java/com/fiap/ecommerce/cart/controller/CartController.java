@@ -15,14 +15,19 @@ public class CartController {
     private CartService cartService;
 
     @PostMapping
-    public ResponseEntity<CartDTO> createCart(@RequestBody CartDTO cartDTO) {
-        CartDTO createdCart = cartService.createCart(cartDTO);
+    public ResponseEntity<CartDTO> createCart(@RequestHeader("Authorization") String authorizationHeader, @RequestBody CartDTO cartDTO) {
+        Long userId = getUserIdFromToken(authorizationHeader);
+        CartDTO updatedCartDTO = new CartDTO(cartDTO.id(), userId, cartDTO.items());
+        CartDTO createdCart = cartService.createCart(updatedCartDTO);
+        System.out.println("createdCart"+createdCart);
         return new ResponseEntity<>(createdCart, HttpStatus.CREATED);
     }
 
     @PostMapping("/{cartId}/items")
-    public ResponseEntity<CartDTO> addItemToCart(@PathVariable Long cartId, @RequestBody CartItemDTO cartItemDTO) {
-        CartDTO updatedCart = cartService.addItem(cartId, cartItemDTO);
+    public ResponseEntity<CartDTO> addItemToCart(@PathVariable Long cartId, @RequestHeader("Authorization") String authorizationHeader, @RequestBody CartItemDTO cartItemDTO) {
+        String token = getTokenFromHeader(authorizationHeader);
+        System.out.println("token"+token);
+        CartDTO updatedCart = cartService.addItem(cartId, cartItemDTO, token);
         return new ResponseEntity<>(updatedCart, HttpStatus.OK);
     }
 
@@ -35,5 +40,17 @@ public class CartController {
     public ResponseEntity<CartDTO> removeItem(@PathVariable Long cartId, @PathVariable Long itemId) {
         CartDTO cartDTO = cartService.removeItem(cartId, itemId);
         return ResponseEntity.ok(cartDTO);
+    }
+
+    private String getTokenFromHeader(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        throw new IllegalArgumentException("Invalid Authorization header format");
+    }
+
+    private Long getUserIdFromToken(String authorizationHeader) {
+        String token = getTokenFromHeader(authorizationHeader);
+        return 123L;
     }
 }
